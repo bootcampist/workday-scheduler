@@ -3,6 +3,7 @@
 ## Description
 
 The Workday Scheduler is a scheduling application using JQuery and Day.JS. It allows for items to be input in time slots and stored in local Storage to be retained after the page is refreshed.
+![screenshot](https://github.com/bootcampist/workday-scheduler/assets/152117886/600c537d-d8e9-4bb1-b1d2-54107b377cea)
 
 
 ## Installation

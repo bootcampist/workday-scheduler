@@ -90,7 +90,7 @@ li{
   background-color: #5b0202;
 }
 
-.present .saveBtn:hover{
+.present .saveBtn:active{
   background-color: #440202;
 }
 
@@ -116,15 +116,16 @@ li{
   border: none;
 }
 
-.saveBtn:hover{
+.saveBtn:active{
   background-color: black;
 }
 
 .saveBtn i:hover {
-  font-size: 25px;
+  font-size: 20px;
   transition: all 0.3s ease-in-out;
 }
 
 .fa-solid {
   color: #e8e7df;
+  opacity: 0.8;
 }

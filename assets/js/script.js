@@ -1,12 +1,9 @@
 //Global Variables
 const container = $('.container');
-let today = dayjs();
 let timeInterval;
 let timeDelay;
-let num;
 let localString;
 let localArray;
-let value;
 let current;
 const times = [{time: dayjs().hour(8).format('HH:00'), input: ""},
                 {time: dayjs().hour(9).format('HH:00'), input: ""},
@@ -23,8 +20,8 @@ let liArray = [];
 
 //Display the Current Day
 function timeDisplay (){
-    today=dayjs();
-    $("#currentDay").text(today.format("dddd DD MMMM YYYY"));
+   let today=dayjs();
+    $('#currentDay').text(today.format('dddd DD MMMM YYYY'));
 };
 
 //Access local storage upon starting the application
@@ -71,15 +68,6 @@ function render () {
     liEl.addClass('time-block').append(hourDiv, textarea, saveBtn);
     liEl.addClass(`li${liArray.length + 1}`);
     
-    //Color-code time blocks based on past, present and future
-    switch (item.time === current){
-        case true:
-            liEl.addClass('present');
-            break;
-        case false:
-            item.time < current? liEl.addClass('past') : liEl.addClass('future')
-            break;
-    };
     liArray.push(liEl); 
     ulEl.append(liEl);
     container.append(ulEl);
@@ -110,12 +98,12 @@ function timeUpdate () {
                 break;
         };
     });
-    timeDisplay();
+    
 };
 
 //Set setinterval to run every hour to update li past, present, future classes
 function timer (milliseconds){
-    let delay = setTimeout(()=>{timeUpdate(); timeInterval = setInterval(timeUpdate, 3600000)},milliseconds);
+    let delay = setTimeout(()=>{timeUpdate(); timeInterval = setInterval(()=>{timeUpdate(); timeDisplay();}, 3600000)},milliseconds);
 };
 
 //Calculate time until next hour
@@ -125,7 +113,6 @@ function timeDifference () {
     let difference = next.diff(now, 'milliseconds');
     let minutes = next.diff(now, 'minutes');
     timeDelay = parseInt(difference);
-  
     timer(timeDelay);
 };
 
@@ -142,7 +129,11 @@ function sorting () {
         initialise();
         timeUpdate();
     });  
-}
+};
+
+$(function () {
+    $('.sortable').sortable();
+  }); 
 
 timeDisplay();
 initialise();
@@ -150,6 +141,6 @@ render();
 timeDifference();
 timeUpdate();
 
-$(function () {
-    $('.sortable').sortable();
-  }); 
+
+
+  

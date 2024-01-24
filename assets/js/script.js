@@ -1,9 +1,8 @@
 //Global Variables
 const container = $('.container');
-const today = dayjs();
+let today = dayjs();
 let timeInterval;
 let timeDelay;
-let localTimes = localStorage.getItem('localTimes');
 let num;
 let localString;
 let localArray;
@@ -24,18 +23,19 @@ let liArray = [];
 
 //Display the Current Day
 function timeDisplay (){
-$("#currentDay").text(today.format("dddd DD MMMM YYYY"));
+    today=dayjs();
+    $("#currentDay").text(today.format("dddd DD MMMM YYYY"));
 };
 
 //Access local storage upon starting the application
 function initialise (){
+    let localTimes = localStorage.getItem('localTimes');
     if (localTimes){
         localArray = JSON.parse(localTimes);
     } else {
         localString = JSON.stringify(times);
         localStorage.setItem('localTimes', localString);
     };
-    current = today.format('HH:00');
 };
 
 //Persist events between refreshes of the page
@@ -46,12 +46,13 @@ function localise (){
 
 //Create timeblocks for standard business hours
 function render () {
+    const ulEl = $('<ul>');
+    ulEl.addClass('sortable');
+
     localArray.map((item)=>{
     
     //Create Elements
-    const ulEl = $('<ul>');
-    const liEl = $('<li>');
-
+    const liEl = $('<li>');    
     const hourDiv = $('<div>').addClass('hour').text(item.time);
     const textarea = $('<textarea>').text(item.input);
     const saveBtn = $('<button>').addClass('saveBtn').html('<i class="fa-solid fa-floppy-disk"></i>');
@@ -60,6 +61,11 @@ function render () {
     saveBtn.on('click', (e)=>{
         item.input=textarea.val();
         localise();
+    });
+
+    hourDiv.on('click', (e)=>{
+        e.preventDefault;
+        sorting();
     });
 
     liEl.addClass('time-block').append(hourDiv, textarea, saveBtn);
@@ -83,18 +89,28 @@ function render () {
 //Update past, present, future classes to change the colour every hour
 function timeUpdate () {
     current = dayjs().format('HH:00');
-    localArray.map((item)=>{
-        num=localArray.indexOf(item);
-        let li = $(`.li${num+1}`);
-        switch (item.time === current){
+    let divArray =[];
+    divArray = $('.hour');
+    divArray.map((item)=>{
+        let li = divArray[item].parentNode;
+        let divText = divArray[item].innerHTML;
+        switch (divText === current){
             case true:  
-                li.removeClass('past future').addClass('present');
+                li.classList.remove('past', 'future');
+                li.classList.add('present');
                 break;
             case false:
-                item.time < current? li.removeClass('present future').addClass('past') : li.removeClass('past present').addClass('future');
+                if(divText < current){
+                    li.classList.remove('present','future');
+                    li.classList.add('past');
+                } else {
+                    li.classList.remove('past', 'present');
+                    li.classList.add('future');
+                }
                 break;
         };
     });
+    timeDisplay();
 };
 
 //Set setinterval to run every hour to update li past, present, future classes
@@ -113,9 +129,27 @@ function timeDifference () {
     timer(timeDelay);
 };
 
-
+//Rearrange order of time blocks by dragging and update times to revert to chronilogical order on click
+function sorting () {
+    let hourArray = [];
+    hourArray = $('li');
+    hourArray.map((hour)=>{
+        let div = hourArray[hour].childNodes[0];
+        let userInput = hourArray[hour].childNodes[1];
+        div.innerHTML = localArray[hour].time;
+        localArray[hour].input = userInput.innerHTML;
+        localise();
+        initialise();
+        timeUpdate();
+    });  
+}
 
 timeDisplay();
 initialise();
 render();
 timeDifference();
+timeUpdate();
+
+$(function () {
+    $('.sortable').sortable();
+  }); 
